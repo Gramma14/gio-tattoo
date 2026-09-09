@@ -7,7 +7,8 @@
 <meta name="description" content="Gio Tattoo è uno studio di tatuaggi a Lecco specializzato in Black &amp; Grey Realism: ritratti, statue, occhi e animali costruiti con profondità e dettaglio. Design 100% custom, consulenza su richiesta.">
 <meta name="keywords" content="tatuatore realistico Lecco, tatuaggi black and grey Lecco, tattoo realism Lombardia, tatuatore ritratti, studio tatuaggi Lecco, Gio Tattoo">
 <meta name="author" content="Gio Tattoo">
-<meta name="robots" content="index, follow">
+<!-- TODO prima del lancio su giotattoo.it: rimuovere noindex qui sotto (torna a "index, follow") -->
+<meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://giotattoo.it/">
 
 <meta name="geo.region" content="IT-LC">
@@ -21,8 +22,8 @@
 <meta property="og:description" content="Tatuaggi realistici black & grey a Lecco: ritratti, statue, occhi, animali. Profondità e dettaglio in ogni linea.">
 <meta property="og:url" content="https://giotattoo.it/">
 <meta property="og:locale" content="it_IT">
-<!-- TODO prima della pubblicazione: creare e caricare una vera immagine di copertina 1200x630 -->
-<meta property="og:image" content="https://giotattoo.it/images/og-cover.jpg">
+<!-- TODO al lancio su giotattoo.it: aggiornare questo URL al dominio definitivo -->
+<meta property="og:image" content="https://gramma14.github.io/gio-tattoo/assets/images/hero.jpg">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Gio Tattoo | Tatuatore Black & Grey Realism a Lecco">
@@ -136,7 +137,7 @@
   <!-- ============ HOME / HERO ============ -->
   <section id="home" class="hero">
     <div class="hero-bg" aria-hidden="true">
-      <div class="hero-photo" data-img="../assets/images/hero.jpg"></div>
+      <div class="hero-photo" data-img="assets/images/hero.jpg" data-alt="Gio al lavoro nel suo studio di tatuaggi a Lecco, seduta di tatuaggio black and grey realism in corso"></div>
       <div class="hero-vignette"></div>
       <div class="hero-grain"></div>
       <div class="hero-spotlight"></div>
@@ -171,17 +172,20 @@
         saranno sostituiti con foto reali dello studio.</em>
       </p>
 
-      <div class="film-viewport reveal">
-        <div class="film-strip" id="work-gallery">
-          <button class="film-item" data-category="ritratti" data-label="Ritratto — placeholder"><span class="ph ph-1" data-img="../assets/images/work-1.jpg"><span class="ph-label">Ritratto<em>placeholder</em></span></span></button>
-          <button class="film-item" data-category="statue" data-label="Statua — placeholder"><span class="ph ph-2" data-img="../assets/images/work-2.jpg"><span class="ph-label">Statua<em>placeholder</em></span></span></button>
-          <button class="film-item" data-category="occhi" data-label="Occhio — placeholder"><span class="ph ph-3" data-img="../assets/images/work-3.jpg"><span class="ph-label">Occhio<em>placeholder</em></span></span></button>
-          <button class="film-item" data-category="animali" data-label="Animale — placeholder"><span class="ph ph-4" data-img="../assets/images/work-4.jpg"><span class="ph-label">Animale<em>placeholder</em></span></span></button>
-          <button class="film-item" data-category="ritratti" data-label="Ritratto — placeholder"><span class="ph ph-2" data-img="../assets/images/work-5.jpg"><span class="ph-label">Ritratto<em>placeholder</em></span></span></button>
-          <button class="film-item" data-category="statue" data-label="Statua — placeholder"><span class="ph ph-4" data-img="../assets/images/work-6.jpg"><span class="ph-label">Statua<em>placeholder</em></span></span></button>
-          <button class="film-item" data-category="occhi" data-label="Occhio — placeholder"><span class="ph ph-1" data-img="../assets/images/work-7.jpg"><span class="ph-label">Occhio<em>placeholder</em></span></span></button>
-          <button class="film-item" data-category="animali" data-label="Animale — placeholder"><span class="ph ph-3" data-img="../assets/images/work-8.jpg"><span class="ph-label">Animale<em>placeholder</em></span></span></button>
+      <div class="film-shell">
+        <div class="film-viewport reveal" id="film-viewport">
+          <div class="film-strip" id="work-gallery">
+            <button class="film-item" data-category="ritratti" data-label="Ritratto — placeholder"><span class="ph ph-1" data-img="assets/images/work-1.jpg"><span class="ph-label">Ritratto<em>placeholder</em></span></span></button>
+            <button class="film-item" data-category="statue" data-label="Statua — placeholder"><span class="ph ph-2" data-img="assets/images/work-2.jpg"><span class="ph-label">Statua<em>placeholder</em></span></span></button>
+            <button class="film-item" data-category="occhi" data-label="Occhio — placeholder"><span class="ph ph-3" data-img="assets/images/work-3.jpg"><span class="ph-label">Occhio<em>placeholder</em></span></span></button>
+            <button class="film-item" data-category="animali" data-label="Animale — placeholder"><span class="ph ph-4" data-img="assets/images/work-4.jpg"><span class="ph-label">Animale<em>placeholder</em></span></span></button>
+            <button class="film-item" data-category="ritratti" data-label="Ritratto — placeholder"><span class="ph ph-2" data-img="assets/images/work-5.jpg"><span class="ph-label">Ritratto<em>placeholder</em></span></span></button>
+            <button class="film-item" data-category="statue" data-label="Statua — placeholder"><span class="ph ph-4" data-img="assets/images/work-6.jpg"><span class="ph-label">Statua<em>placeholder</em></span></span></button>
+            <button class="film-item" data-category="occhi" data-label="Occhio — placeholder"><span class="ph ph-1" data-img="assets/images/work-7.jpg"><span class="ph-label">Occhio<em>placeholder</em></span></span></button>
+            <button class="film-item" data-category="animali" data-label="Animale — placeholder"><span class="ph ph-3" data-img="assets/images/work-8.jpg"><span class="ph-label">Animale<em>placeholder</em></span></span></button>
+          </div>
         </div>
+        <div class="film-edge" id="film-edge" aria-hidden="true"></div>
       </div>
       <p class="film-hint reveal">Scorri per vedere altri lavori →</p>
 
@@ -194,7 +198,7 @@
     <div class="container about-inner">
 
       <div class="about-portrait reveal">
-        <div class="ph ph-portrait" data-img="../assets/images/about-portrait.jpg">
+        <div class="ph ph-portrait" data-img="assets/images/about-portrait.jpg">
           <div class="about-name-overlay">
             <span class="about-name">Gio</span>
             <span class="about-name-sub">Black &amp; Grey Realism — Lecco</span>
@@ -207,7 +211,7 @@
         <h2 class="section-title reveal">Conosco la pelle<br>come una tela.</h2>
 
         <div class="about-secondary reveal">
-          <div class="ph ph-secondary" data-img="../assets/images/about-studio.jpg"><span class="ph-label">Studio<em>foto placeholder</em></span></div>
+          <div class="ph ph-secondary" data-img="assets/images/about-studio.jpg" data-alt="Interno dello studio di tatuaggi Gio Tattoo a Lecco"><span class="ph-label">Studio<em>foto placeholder</em></span></div>
         </div>
 
         <ul class="about-points-v2">

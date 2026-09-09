@@ -3,12 +3,34 @@
    col caricamento iniziale (più veloce su LCP/Core Web Vitals). Se i file non
    esistono ancora, i probe falliscono in silenzio e restano i placeholder —
    vedi assets/images/LEGGIMI.md. */
+var CATEGORY_LABELS = {
+  ritratti: 'ritratto',
+  statue: 'statua',
+  occhi: 'occhio',
+  animali: 'animale'
+};
+
 window.addEventListener('load', function () {
   document.querySelectorAll('[data-img]').forEach(function (el) {
     var img = new Image();
     img.onload = function () {
       el.style.backgroundImage = 'url("' + el.getAttribute('data-img') + '")';
       el.classList.add('has-photo');
+
+      /* Etichetta descrittiva per screen reader / semantica (utile anche in ottica SEO):
+         un div con background-image non porta testo alternativo, quindi lo aggiungiamo
+         via ARIA. Usa data-alt se presente, altrimenti lo deduce dalla categoria del
+         tatuaggio (data-category sul bottone genitore), con un fallback generico. */
+      var alt = el.getAttribute('data-alt');
+      if (!alt) {
+        var parentBtn = el.closest('[data-category]');
+        var cat = parentBtn ? CATEGORY_LABELS[parentBtn.getAttribute('data-category')] : null;
+        alt = cat
+          ? 'Tatuaggio black and grey realism, stile ' + cat + ' — Gio Tattoo, Lecco'
+          : 'Tatuaggio black and grey realism — Gio Tattoo, Lecco';
+      }
+      el.setAttribute('role', 'img');
+      el.setAttribute('aria-label', alt);
     };
     img.src = el.getAttribute('data-img');
   });
@@ -137,27 +159,66 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ---------- Work: hover filmstrip (ingrandimento + le altre si scuriscono e si spostano) ---------- */
+  /* ---------- Work: filmstrip — hover (mouse) + tap (touch) ---------- */
   var filmStrip = document.getElementById('work-gallery');
+  var isTouchLike = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+  function focusFilmItem(items, i) {
+    items.forEach(function (other, j) {
+      other.classList.remove('is-focused', 'is-dimmed', 'shift-left', 'shift-right');
+      if (j === i) {
+        other.classList.add('is-focused');
+      } else {
+        other.classList.add('is-dimmed', j < i ? 'shift-left' : 'shift-right');
+      }
+    });
+  }
+  function clearFilmFocus(items) {
+    items.forEach(function (other) {
+      other.classList.remove('is-focused', 'is-dimmed', 'shift-left', 'shift-right');
+    });
+  }
+
+  /* Nasconde l'indizio "scorri" quando si è arrivati alla fine della fila */
+  var filmViewport = document.getElementById('film-viewport');
+  var filmEdge = document.getElementById('film-edge');
+  if (filmViewport && filmEdge) {
+    var updateFilmEdge = function () {
+      var atEnd = filmViewport.scrollLeft + filmViewport.clientWidth >= filmViewport.scrollWidth - 8;
+      filmEdge.classList.toggle('is-end', atEnd);
+    };
+    updateFilmEdge();
+    filmViewport.addEventListener('scroll', updateFilmEdge, { passive: true });
+    window.addEventListener('resize', updateFilmEdge);
+  }
+
   if (filmStrip) {
     var filmItems = Array.from(filmStrip.querySelectorAll('.film-item'));
-    filmItems.forEach(function (item, i) {
-      item.addEventListener('mouseenter', function () {
-        filmItems.forEach(function (other, j) {
-          other.classList.remove('is-focused', 'is-dimmed', 'shift-left', 'shift-right');
-          if (j === i) {
-            other.classList.add('is-focused');
-          } else {
-            other.classList.add('is-dimmed', j < i ? 'shift-left' : 'shift-right');
+
+    if (!isTouchLike) {
+      /* Desktop: la stessa animazione scatta al passaggio del mouse */
+      filmItems.forEach(function (item, i) {
+        item.addEventListener('mouseenter', function () { focusFilmItem(filmItems, i); });
+      });
+      filmStrip.addEventListener('mouseleave', function () { clearFilmFocus(filmItems); });
+    } else {
+      /* Touch: primo tocco = anteprima (ingrandisce, le altre si scuriscono/spostano);
+         se tocchi di nuovo la stessa foto già in anteprima, si apre la lightbox
+         (gestita più sotto) — toccando una foto diversa si sposta solo l'anteprima. */
+      filmItems.forEach(function (item, i) {
+        item.addEventListener('click', function (e) {
+          var alreadyFocused = item.classList.contains('is-focused');
+          if (!alreadyFocused) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            focusFilmItem(filmItems, i);
           }
         });
       });
-    });
-    filmStrip.addEventListener('mouseleave', function () {
-      filmItems.forEach(function (other) {
-        other.classList.remove('is-focused', 'is-dimmed', 'shift-left', 'shift-right');
+      document.addEventListener('click', function (e) {
+        if (!filmStrip.contains(e.target)) clearFilmFocus(filmItems);
       });
-    });
+    }
   }
 
   /* ---------- FAQ accordion ---------- */
