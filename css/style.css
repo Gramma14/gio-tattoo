@@ -252,10 +252,12 @@ p{ margin: 0 0 1em; color: var(--muted); }
 }
 .ph-label em{ display:block; font-style: normal; font-weight: 500; text-transform: none; letter-spacing: 0; color: rgba(237,237,237,.45); font-size: 12px; margin-top: 4px; }
 
-.ph-1{ background: radial-gradient(ellipse at 70% 20%, #2b2521 0%, #141414 60%); }
-.ph-2{ background: radial-gradient(ellipse at 30% 30%, #241f2b 0%, #121214 60%); }
-.ph-3{ background: radial-gradient(ellipse at 50% 15%, #24211a 0%, #131311 60%); }
-.ph-4{ background: radial-gradient(ellipse at 20% 60%, #1e2724 0%, #101312 60%); }
+/* background-image (non la scorciatoia "background"): quest'ultima resetterebbe anche
+   background-size/position ereditati da .ph, causando poi lo zoom errato sulle foto vere. */
+.ph-1{ background-image: radial-gradient(ellipse at 70% 20%, #2b2521 0%, #141414 60%); }
+.ph-2{ background-image: radial-gradient(ellipse at 30% 30%, #241f2b 0%, #121214 60%); }
+.ph-3{ background-image: radial-gradient(ellipse at 50% 15%, #24211a 0%, #131311 60%); }
+.ph-4{ background-image: radial-gradient(ellipse at 20% 60%, #1e2724 0%, #101312 60%); }
 
 /* ==========================================================================
    Work / gallery
@@ -347,7 +349,7 @@ p{ margin: 0 0 1em; color: var(--muted); }
 .about-inner{ display: grid; grid-template-columns: .85fr 1fr; gap: 64px; align-items: start; }
 
 .about-portrait{ position: sticky; top: 116px; aspect-ratio: 4/5; }
-.ph-portrait{ height: 100%; background: radial-gradient(ellipse at 35% 20%, #2b2119 0%, #121212 65%); align-items: flex-end; }
+.ph-portrait{ height: 100%; background-image: radial-gradient(ellipse at 35% 20%, #2b2119 0%, #121212 65%); align-items: flex-end; }
 .about-name-overlay{
   position: relative; z-index: 1; width: 100%; padding: 28px;
   background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.75) 85%);
@@ -356,7 +358,7 @@ p{ margin: 0 0 1em; color: var(--muted); }
 .about-name-sub{ display: block; margin-top: 8px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
 
 .about-secondary{ aspect-ratio: 16/9; margin: 8px 0 40px; max-width: 420px; }
-.ph-secondary{ height: 100%; background: radial-gradient(ellipse at 60% 30%, #241c14 0%, #101010 65%); }
+.ph-secondary{ height: 100%; background-image: radial-gradient(ellipse at 60% 30%, #241c14 0%, #101010 65%); }
 
 .about-points-v2{ display: flex; flex-direction: column; }
 .about-points-v2 li{
