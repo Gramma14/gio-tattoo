@@ -1,0 +1,22 @@
+# Header di sicurezza per Netlify (formato nativo Netlify — file "_headers").
+# GitHub Pages NON supporta header HTTP personalizzati: questo file non ha
+# nessun effetto lì, resta inerte finché il sito non è ospitato su Netlify.
+#
+# Content-Security-Policy spiegata riga per riga:
+# - script-src 'self': solo js/script.js, nessuno script esterno o inline
+# - style-src 'self' https://fonts.googleapis.com: solo il nostro CSS + Google Fonts
+#   (nessun inline style nell'HTML: tutte le rotazioni delle card Process sono
+#   state spostate in css/style.css apposta per evitare "unsafe-inline" qui)
+# - font-src: solo i file font di Google Fonts
+# - img-src 'self' data:: le nostre foto + le texture SVG inline (grana del hero, favicon)
+# - connect-src 'self': nessuna chiamata a servizi esterni per ora — quando il
+#   form contatti verrà collegato a Formspree o Netlify Forms, questa riga va
+#   aggiornata per includere quel dominio (es. https://formspree.io)
+# - form-action 'self': stesso discorso, da aggiornare quando il form è collegato
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+  Strict-Transport-Security: max-age=63072000; includeSubDomains

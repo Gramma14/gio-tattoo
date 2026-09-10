@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var revealEls = document.querySelectorAll('.reveal, .stagger');
 
   // Delay incrementale per elementi in griglia, calcolato per contenitore (max ~360ms)
-  ['#work-gallery', '#gallery-full', '.process-cards', '.contact-details', '.contact-form'].forEach(function (sel) {
+  ['#work-gallery', '#gallery-full', '.process-cards', '.contact-details', '.contact-form', '.about-points-v2', '.faq-list'].forEach(function (sel) {
     var container = document.querySelector(sel);
     if (!container) return;
     var items = container.querySelectorAll('.stagger, .reveal');
@@ -293,12 +293,19 @@ document.addEventListener('DOMContentLoaded', function () {
   if (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+
+      // Honeypot: un utente reale non vede/compila questo campo, i bot spesso sì.
+      // Se è pieno, scartiamo in silenzio senza dare feedback (non serve far sapere
+      // ai bot che sono stati individuati).
+      var honeypot = form.querySelector('#website');
+      if (honeypot && honeypot.value.trim() !== '') return;
+
       if (!form.checkValidity()) {
         formNote.textContent = 'Controlla i campi obbligatori prima di inviare.';
         formNote.style.color = '#D6A25E';
         return;
       }
-      formNote.textContent = 'Demo: form pronto lato interfaccia — va collegato a un servizio di invio (es. Formspree) prima della pubblicazione.';
+      formNote.textContent = 'Demo: form pronto lato interfaccia — va collegato a un servizio di invio (es. Formspree o Netlify Forms) prima della pubblicazione.';
       formNote.style.color = '#B8823C';
       form.reset();
     });
