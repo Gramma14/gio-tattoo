@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gio Tattoo | Tatuatore Black &amp; Grey Realism a Lecco</title>
-<meta name="description" content="Gio Tattoo è uno studio di tatuaggi a Lecco specializzato in Black &amp; Grey Realism: ritratti, statue, occhi e animali costruiti con profondità e dettaglio. Design 100% custom, consulenza su richiesta.">
-<meta name="keywords" content="tatuatore realistico Lecco, tatuaggi black and grey Lecco, tattoo realism Lombardia, tatuatore ritratti, studio tatuaggi Lecco, Gio Tattoo">
+<!-- Meta description tenuta sotto ~155 caratteri per non farla troncare nella SERP -->
+<meta name="description" content="Gio Tattoo: studio di tatuaggi a Lecco specializzato in Black &amp; Grey Realism — ritratti, statue, occhi, animali. Design 100% custom, su consulenza.">
 <meta name="author" content="Gio Tattoo">
 <!-- TODO prima del lancio su giotattoo.it: rimuovere noindex qui sotto (torna a "index, follow") -->
 <meta name="robots" content="noindex, nofollow">
@@ -22,8 +22,12 @@
 <meta property="og:description" content="Tatuaggi realistici black & grey a Lecco: ritratti, statue, occhi, animali. Profondità e dettaglio in ogni linea.">
 <meta property="og:url" content="https://giotattoo.it/">
 <meta property="og:locale" content="it_IT">
-<!-- TODO al lancio su giotattoo.it: aggiornare questo URL al dominio definitivo -->
+<!-- TODO al lancio su giotattoo.it: aggiornare questo URL al dominio definitivo,
+     idealmente con un'immagine 1200x630 dedicata invece della foto hero riusata -->
 <meta property="og:image" content="https://gramma14.github.io/gio-tattoo/assets/images/hero.jpg">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="Gio al lavoro nel suo studio di tatuaggi a Lecco">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Gio Tattoo | Tatuatore Black & Grey Realism a Lecco">
@@ -31,67 +35,127 @@
 
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230A0A0B'/%3E%3Cpath d='M42 22c-3-4-8-6-13-6-11 0-19 8-19 18s8 18 19 18c8 0 15-4 18-11h-16' fill='none' stroke='%23B8823C' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
+<!-- Preload dell'immagine hero: è il più probabile elemento LCP (Largest Contentful
+     Paint) di questa pagina, quindi la facciamo partire in scaricamento il prima
+     possibile invece di aspettare che il JS la richieda più avanti. -->
+<link rel="preload" as="image" href="assets/images/hero.jpg" fetchpriority="high">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
 
+<!--
+  Structured data come un unico grafo collegato (@graph): l'attività (TattooParlor),
+  Gio come Person, il sito (WebSite) e questa pagina (WebPage) sono collegati tra loro
+  tramite @id invece di essere ripetuti/isolati. Ogni valore qui sotto corrisponde a
+  contenuto realmente visibile nella pagina (nessun dato inventato):
+  - "image" usa le foto vere già online (stesso URL provvisorio di og:image sopra,
+    stesso TODO: aggiornare al dominio definitivo al lancio)
+  - "sameAs" è omesso di proposito: i link social in footer sono ancora placeholder
+    (href="#"), verrà aggiunto quando saranno reali
+  - "priceRange" è stato tolto: la sezione FAQ dice esplicitamente che il prezzo è
+    a preventivo, indicare una fascia fissa contraddirebbe quel testo
+  - "hasOfferCatalog" rispecchia le 4 categorie mostrate davvero in Work/Galleria
+    (ritratti, statue, occhi, animali)
+-->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "TattooParlor",
-  "name": "Gio Tattoo",
-  "description": "Studio di tatuaggi specializzato in Black & Grey Realism: ritratti, statue, occhi e animali.",
-  "url": "https://giotattoo.it/",
-  "telephone": "+39-000-0000000",
-  "priceRange": "€€",
-  "image": "https://giotattoo.it/images/og-cover.jpg",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Lecco",
-    "addressRegion": "LC",
-    "addressCountry": "IT"
-  },
-  "geo": { "@type": "GeoCoordinates", "latitude": 45.8566, "longitude": 9.3931 },
-  "areaServed": "Lecco e provincia",
-  "sameAs": ["https://www.instagram.com/giotattoo/"]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
+  "@graph": [
     {
-      "@type": "Question",
-      "name": "Quanto costa un tatuaggio realistico a Lecco?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Il prezzo dipende da dimensione, livello di dettaglio e tempo necessario. Ogni preventivo viene definito durante la consulenza iniziale, dopo aver visto l'idea e la zona del corpo." }
+      "@type": "TattooParlor",
+      "@id": "https://giotattoo.it/#business",
+      "name": "Gio Tattoo",
+      "description": "Studio di tatuaggi specializzato in Black & Grey Realism: ritratti, statue, occhi e animali.",
+      "url": "https://giotattoo.it/",
+      "telephone": "+39-000-0000000",
+      "image": [
+        "https://gramma14.github.io/gio-tattoo/assets/images/hero.jpg",
+        "https://gramma14.github.io/gio-tattoo/assets/images/about-studio.jpg"
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Lecco",
+        "addressRegion": "LC",
+        "addressCountry": "IT"
+      },
+      "geo": { "@type": "GeoCoordinates", "latitude": 45.8566, "longitude": 9.3931 },
+      "areaServed": "Lecco e provincia",
+      "founder": { "@id": "https://giotattoo.it/#gio" },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Stili di tatuaggio Black & Grey Realism",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tatuaggi ritratto realistico" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tatuaggi statue e busti" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tatuaggi occhi realistici" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Tatuaggi animali realistici" } }
+        ]
+      }
     },
     {
-      "@type": "Question",
-      "name": "Come funziona la consulenza iniziale?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Si parte da una chiacchierata, in studio o da remoto, per capire soggetto, riferimenti e posizionamento. Da lì nasce un disegno custom, non un pezzo da catalogo." }
+      "@type": "Person",
+      "@id": "https://giotattoo.it/#gio",
+      "name": "Gio",
+      "jobTitle": "Tatuatore Black & Grey Realism",
+      "worksFor": { "@id": "https://giotattoo.it/#business" },
+      "knowsAbout": ["Black and grey realism tattoo", "Ritratti tatuati", "Statue tatuate", "Occhi realistici tatuati", "Animali tatuati"]
     },
     {
-      "@type": "Question",
-      "name": "Quante sedute servono per un pezzo black & grey realism?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Dipende dalla dimensione e dal livello di dettaglio: un pezzo piccolo può bastare in una seduta, i lavori più ampi e dettagliati richiedono più sedute pianificate insieme." }
+      "@type": "WebSite",
+      "@id": "https://giotattoo.it/#website",
+      "url": "https://giotattoo.it/",
+      "name": "Gio Tattoo",
+      "inLanguage": "it-IT",
+      "publisher": { "@id": "https://giotattoo.it/#business" }
     },
     {
-      "@type": "Question",
-      "name": "Devo portare un riferimento fotografico?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Aiuta molto, soprattutto per ritratti e soggetti realistici, ma non è obbligatorio: anche solo un'idea chiara è un buon punto di partenza per il disegno custom." }
+      "@type": "WebPage",
+      "@id": "https://giotattoo.it/#webpage",
+      "url": "https://giotattoo.it/",
+      "name": "Gio Tattoo | Tatuatore Black & Grey Realism a Lecco",
+      "isPartOf": { "@id": "https://giotattoo.it/#website" },
+      "about": { "@id": "https://giotattoo.it/#business" },
+      "inLanguage": "it-IT"
     },
     {
-      "@type": "Question",
-      "name": "Come mi devo preparare prima della seduta?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Presentati riposato, idratato e con la zona da tatuare pulita, evitando alcol nelle ore precedenti. In studio verranno fornite tutte le indicazioni pratiche prima di iniziare." }
-    },
-    {
-      "@type": "Question",
-      "name": "Lavorate solo su appuntamento?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Sì, ogni lavoro è custom e richiede tempo dedicato: si lavora solo su appuntamento, prenotabile tramite il form contatti o via Instagram." }
+      "@type": "FAQPage",
+      "@id": "https://giotattoo.it/#faq",
+      "mainEntityOfPage": { "@id": "https://giotattoo.it/#webpage" },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Quanto costa un tatuaggio realistico a Lecco?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Il prezzo dipende da dimensione, livello di dettaglio e tempo necessario. Ogni preventivo viene definito durante la consulenza iniziale, dopo aver visto l'idea e la zona del corpo." }
+        },
+        {
+          "@type": "Question",
+          "name": "Come funziona la consulenza iniziale?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Si parte da una chiacchierata, in studio o da remoto, per capire soggetto, riferimenti e posizionamento. Da lì nasce un disegno custom, non un pezzo da catalogo." }
+        },
+        {
+          "@type": "Question",
+          "name": "Quante sedute servono per un pezzo black & grey realism?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Dipende dalla dimensione e dal livello di dettaglio: un pezzo piccolo può bastare in una seduta, i lavori più ampi e dettagliati richiedono più sedute pianificate insieme." }
+        },
+        {
+          "@type": "Question",
+          "name": "Devo portare un riferimento fotografico?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Aiuta molto, soprattutto per ritratti e soggetti realistici, ma non è obbligatorio: anche solo un'idea chiara è un buon punto di partenza per il disegno custom." }
+        },
+        {
+          "@type": "Question",
+          "name": "Come mi devo preparare prima della seduta?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Presentati riposato, idratato e con la zona da tatuare pulita, evitando alcol nelle ore precedenti. In studio verranno fornite tutte le indicazioni pratiche prima di iniziare." }
+        },
+        {
+          "@type": "Question",
+          "name": "Lavorate solo su appuntamento?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sì, ogni lavoro è custom e richiede tempo dedicato: si lavora solo su appuntamento, prenotabile tramite il form contatti o via Instagram." }
+        }
+      ]
     }
   ]
 }
@@ -163,7 +227,7 @@
       <div class="section-head-row reveal">
         <div>
           <p class="eyebrow">Portfolio</p>
-          <h2 class="section-title">Work</h2>
+          <h2 class="section-title">Lavori</h2>
         </div>
         <a href="galleria.html" class="link-arrow">Vedi la galleria completa <span aria-hidden="true">→</span></a>
       </div>
@@ -240,8 +304,11 @@
         <p class="section-lead reveal">Come portiamo un tatuaggio dall'idea alla pelle, passo dopo passo.</p>
       </div>
 
-      <div class="process-cards">
-        <article class="process-card reveal">
+      <!-- <ol> invece di una serie di <div>: sono 4 passaggi in sequenza numerata
+           (01-04 già visibili), una lista ordinata è la semantica HTML corretta e
+           aiuta screen reader/motori di ricerca a capire che è un percorso in ordine. -->
+      <ol class="process-cards">
+        <li class="process-card reveal">
           <div class="process-card-top">
             <span class="process-num">01</span>
             <svg class="process-doodle" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
@@ -251,9 +318,9 @@
           </div>
           <h3>Racconta la tua idea</h3>
           <p>Si parte da una conversazione, in studio o da remoto: soggetto, posizionamento, riferimenti. Da un'idea chiara nasce un disegno pensato per la tua pelle.</p>
-        </article>
+        </li>
 
-        <article class="process-card reveal">
+        <li class="process-card reveal">
           <div class="process-card-top">
             <span class="process-num">02</span>
             <svg class="process-doodle" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
@@ -263,9 +330,9 @@
           </div>
           <h3>Il disegno prende forma</h3>
           <p>Creo una composizione custom su misura: linee pulite, contrasto e un layout che segue in modo naturale il volume del corpo.</p>
-        </article>
+        </li>
 
-        <article class="process-card reveal">
+        <li class="process-card reveal">
           <div class="process-card-top">
             <span class="process-num">03</span>
             <svg class="process-doodle" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
@@ -275,9 +342,9 @@
           </div>
           <h3>La seduta di tatuaggio</h3>
           <p>Confermiamo posizionamento e dettagli prima che l'ago tocchi la pelle. Lavoro pulito, costante, con la massima attenzione al comfort.</p>
-        </article>
+        </li>
 
-        <article class="process-card reveal">
+        <li class="process-card reveal">
           <div class="process-card-top">
             <span class="process-num">04</span>
             <svg class="process-doodle" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
@@ -286,8 +353,8 @@
           </div>
           <h3>Cura e guarigione</h3>
           <p>Ricevi indicazioni chiare per la guarigione, così il pezzo mantiene profondità e contrasto nel tempo, non solo il primo giorno.</p>
-        </article>
-      </div>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -296,7 +363,7 @@
     <div class="container">
       <div class="faq-head">
         <p class="eyebrow reveal">Domande frequenti</p>
-        <h2 class="section-title reveal">Frequently<br>Asked Questions</h2>
+        <h2 class="section-title reveal">Prima di<br>prenotare.</h2>
         <p class="faq-lead reveal">Le risposte alle domande più comuni prima di prenotare una seduta a Lecco.</p>
       </div>
 
@@ -473,6 +540,11 @@
 
 <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
 
+<!-- PLACEHOLDER: numero WhatsApp reale (stesso link dell'icona nel footer) -->
+<a href="https://wa.me/390000000000" class="whatsapp-float" aria-label="Scrivi a Gio su WhatsApp" rel="noopener" target="_blank">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9"/><path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1"/></svg>
+</a>
+
 <div class="lightbox" id="lightbox" hidden>
   <button class="lightbox-close" id="lightbox-close" aria-label="Chiudi">&times;</button>
   <div class="lightbox-content">
@@ -481,6 +553,6 @@
   </div>
 </div>
 
-<script src="js/script.js?v=3"></script>
+<script src="js/script.js?v=4"></script>
 </body>
 </html>

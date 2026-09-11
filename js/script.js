@@ -1,8 +1,14 @@
-/* Probe delle foto opzionali (data-img) rimandato a "load": parte solo dopo che
-   CSS/font/JS critici sono già a posto, così non compete per banda/connessioni
-   col caricamento iniziale (più veloce su LCP/Core Web Vitals). Se i file non
-   esistono ancora, i probe falliscono in silenzio e restano i placeholder —
-   vedi assets/images/LEGGIMI.md. */
+/* Probe delle foto opzionali (data-img): se i file non esistono ancora, falliscono
+   in silenzio e restano i placeholder — vedi assets/images/LEGGIMI.md.
+
+   Caricamento diviso in due velocità per i Core Web Vitals:
+   - la foto hero (probabile elemento LCP della home) parte SUBITO, appena lo script
+     gira, senza aspettare altro — è già anche precaricata via <link rel="preload">
+     in index.html, quindi qui trova quasi sempre la cache pronta;
+   - tutte le altre foto (work, about, galleria) caricano solo quando l'elemento sta
+     per entrare nello schermo (IntersectionObserver, con un margine di anticipo),
+     invece di scaricarle tutte insieme all'avvio: utile soprattutto per la pagina
+     Galleria con tante foto in una volta sola. */
 var CATEGORY_LABELS = {
   ritratti: 'ritratto',
   statue: 'statua',
@@ -10,31 +16,52 @@ var CATEGORY_LABELS = {
   animali: 'animale'
 };
 
-window.addEventListener('load', function () {
-  document.querySelectorAll('[data-img]').forEach(function (el) {
-    var img = new Image();
-    img.onload = function () {
-      el.style.backgroundImage = 'url("' + el.getAttribute('data-img') + '")';
-      el.classList.add('has-photo');
+function loadDataImg(el) {
+  var img = new Image();
+  img.onload = function () {
+    el.style.backgroundImage = 'url("' + el.getAttribute('data-img') + '")';
+    el.classList.add('has-photo');
 
-      /* Etichetta descrittiva per screen reader / semantica (utile anche in ottica SEO):
-         un div con background-image non porta testo alternativo, quindi lo aggiungiamo
-         via ARIA. Usa data-alt se presente, altrimenti lo deduce dalla categoria del
-         tatuaggio (data-category sul bottone genitore), con un fallback generico. */
-      var alt = el.getAttribute('data-alt');
-      if (!alt) {
-        var parentBtn = el.closest('[data-category]');
-        var cat = parentBtn ? CATEGORY_LABELS[parentBtn.getAttribute('data-category')] : null;
-        alt = cat
-          ? 'Tatuaggio black and grey realism, stile ' + cat + ' — Gio Tattoo, Lecco'
-          : 'Tatuaggio black and grey realism — Gio Tattoo, Lecco';
-      }
-      el.setAttribute('role', 'img');
-      el.setAttribute('aria-label', alt);
-    };
-    img.src = el.getAttribute('data-img');
-  });
-});
+    /* Etichetta descrittiva per screen reader / semantica (utile anche in ottica SEO):
+       un div con background-image non porta testo alternativo, quindi lo aggiungiamo
+       via ARIA. Usa data-alt se presente, altrimenti lo deduce dalla categoria del
+       tatuaggio (data-category sul bottone genitore), con un fallback generico. */
+    var alt = el.getAttribute('data-alt');
+    if (!alt) {
+      var parentBtn = el.closest('[data-category]');
+      var cat = parentBtn ? CATEGORY_LABELS[parentBtn.getAttribute('data-category')] : null;
+      alt = cat
+        ? 'Tatuaggio black and grey realism, stile ' + cat + ' — Gio Tattoo, Lecco'
+        : 'Tatuaggio black and grey realism — Gio Tattoo, Lecco';
+    }
+    el.setAttribute('role', 'img');
+    el.setAttribute('aria-label', alt);
+  };
+  img.src = el.getAttribute('data-img');
+}
+
+(function () {
+  var allImgEls = Array.from(document.querySelectorAll('[data-img]'));
+  var heroEl = document.querySelector('.hero-photo[data-img]');
+
+  if (heroEl) loadDataImg(heroEl);
+  var lazyEls = allImgEls.filter(function (el) { return el !== heroEl; });
+
+  if ('IntersectionObserver' in window && lazyEls.length) {
+    var imgObserver = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          loadDataImg(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '400px 0px' });
+    lazyEls.forEach(function (el) { imgObserver.observe(el); });
+  } else if (lazyEls.length) {
+    // Browser senza IntersectionObserver: fallback al comportamento precedente.
+    window.addEventListener('load', function () { lazyEls.forEach(loadDataImg); });
+  }
+})();
 
 document.addEventListener('DOMContentLoaded', function () {
 
