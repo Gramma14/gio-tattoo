@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var revealEls = document.querySelectorAll('.reveal, .stagger');
 
   // Delay incrementale per elementi in griglia, calcolato per contenitore (max ~360ms)
-  ['#work-gallery', '#gallery-full', '.process-cards', '.contact-details', '.contact-form', '.about-points-v2', '.faq-list'].forEach(function (sel) {
+  ['#work-gallery', '#gallery-full', '.process-cards', '.contact-details', '.about-points-v2', '.faq-list'].forEach(function (sel) {
     var container = document.querySelector(sel);
     if (!container) return;
     var items = container.querySelectorAll('.stagger, .reveal');
@@ -309,15 +309,68 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.key === 'Escape' && lightbox && !lightbox.hidden) closeLightbox();
   });
 
-  /* ---------- Form contatto ----------
-     Sito statico: non c'è backend. Prima della pubblicazione collegare
-     l'attributo action del form (in index.html) a un servizio come
-     Formspree / Netlify Forms / Basin, oppure a un endpoint proprio.
-     Per ora il submit viene intercettato solo per mostrare un messaggio
-     di conferma in demo, senza inviare nulla. */
+  /* ---------- Form contatto: 3 step invece di un blocco unico ----------
+     Un passaggio alla volta sembra (ed è) meno impegnativo da completare,
+     soprattutto su mobile — principio classico di CRO sui form lunghi.
+     Se questo script non gira per qualche motivo, in HTML i tre .form-step
+     non hanno l'attributo hidden: restano tutti visibili in sequenza, il
+     form resta compilabile e inviabile (nessun vicolo cieco). */
   var form = document.getElementById('contact-form');
   var formNote = document.getElementById('form-note');
   if (form) {
+    var formSteps = Array.from(form.querySelectorAll('.form-step'));
+    var progressDots = Array.from(form.querySelectorAll('.form-progress-step'));
+    var stepLabelEl = document.getElementById('form-step-label');
+    var backBtn = form.querySelector('.form-back');
+    var nextBtn = form.querySelector('.form-next');
+    var submitBtn = form.querySelector('.form-submit');
+    var stepNames = ['Passo 1 di 3 — Il soggetto', 'Passo 2 di 3 — La tua idea', 'Passo 3 di 3 — I tuoi contatti'];
+    var currentStep = 0;
+
+    function showStep(i) {
+      formSteps.forEach(function (step, idx) { step.hidden = idx !== i; });
+      progressDots.forEach(function (dot, idx) {
+        dot.classList.toggle('is-active', idx === i);
+        dot.classList.toggle('is-done', idx < i);
+      });
+      if (stepLabelEl) stepLabelEl.textContent = stepNames[i] || '';
+      if (backBtn) backBtn.hidden = i === 0;
+      if (nextBtn) nextBtn.hidden = i === formSteps.length - 1;
+      if (submitBtn) submitBtn.hidden = i !== formSteps.length - 1;
+      // Sposta il focus sul primo campo del nuovo step: utile per chi naviga da
+      // tastiera o con uno screen reader, altrimenti il focus resterebbe sul
+      // bottone "Avanti" appena nascosto.
+      var firstField = formSteps[i].querySelector('input, select, textarea');
+      if (firstField) firstField.focus({ preventScroll: true });
+    }
+
+    function validateStep(i) {
+      var fields = formSteps[i].querySelectorAll('input, select, textarea');
+      for (var j = 0; j < fields.length; j++) {
+        if (!fields[j].checkValidity()) {
+          fields[j].reportValidity();
+          return false;
+        }
+      }
+      return true;
+    }
+
+    if (formSteps.length && nextBtn) {
+      if (nextBtn) nextBtn.addEventListener('click', function () {
+        if (!validateStep(currentStep)) return;
+        if (currentStep < formSteps.length - 1) { currentStep++; showStep(currentStep); }
+      });
+      if (backBtn) backBtn.addEventListener('click', function () {
+        if (currentStep > 0) { currentStep--; showStep(currentStep); }
+      });
+      showStep(0);
+    }
+
+    /* Sito statico: non c'è backend. Prima della pubblicazione collegare
+       l'attributo action del form (in index.html) a un servizio come
+       Formspree / Netlify Forms / Basin, oppure a un endpoint proprio.
+       Per ora il submit viene intercettato solo per mostrare un messaggio
+       di conferma in demo, senza inviare nulla. */
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
@@ -335,6 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
       formNote.textContent = 'Demo: form pronto lato interfaccia — va collegato a un servizio di invio (es. Formspree o Netlify Forms) prima della pubblicazione.';
       formNote.style.color = '#B8823C';
       form.reset();
+      if (formSteps.length) { currentStep = 0; showStep(0); }
     });
   }
 

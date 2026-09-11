@@ -101,10 +101,16 @@ p{ margin: 0 0 1em; color: var(--muted); }
 /* ==========================================================================
    Header
    ========================================================================== */
+/* In cima alla pagina l'header è quasi trasparente: sulla home la hero riempie tutto
+   lo schermo (compreso lo spazio dietro l'header, vedi .hero{padding-top:0}) e loghi/
+   nav restano leggibili grazie al text-shadow qui sotto. Scendendo con lo scroll
+   (.scrolled, gestito in script.js) l'header diventa un bar pieno e leggibile su
+   qualsiasi sfondo, come prima. */
 .site-header{
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  background: rgba(10,10,11,.7);
-  border-bottom: 1px solid transparent; transition: border-color .3s var(--ease), background .3s var(--ease);
+  background: rgba(10,10,11,.16);
+  border-bottom: 1px solid transparent;
+  transition: border-color .35s var(--ease), background .35s var(--ease);
 }
 .site-header.scrolled{ border-bottom-color: var(--border); background: rgba(10,10,11,.92); }
 /* Il blur va su uno pseudo-elemento, non sull'header stesso: backdrop-filter su un
@@ -112,8 +118,16 @@ p{ margin: 0 0 1em; color: var(--muted); }
    menu mobile), rompendone il posizionamento. Isolarlo così evita il problema. */
 .site-header::before{
   content:""; position: absolute; inset: 0; z-index: -1;
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  transition: backdrop-filter .35s var(--ease), -webkit-backdrop-filter .35s var(--ease);
+}
+.site-header.scrolled::before{
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
+/* Leggibilità di logo e nav quando galleggiano trasparenti sopra una foto: sparisce
+   da sola una volta che l'header è pieno (.scrolled), dove non serve più. */
+.logo-text, .nav-link{ text-shadow: 0 2px 10px rgba(0,0,0,.65); transition: text-shadow .35s var(--ease); }
+.site-header.scrolled .logo-text, .site-header.scrolled .nav-link{ text-shadow: none; }
 
 .header-inner{ display: flex; align-items: center; height: 84px; }
 
@@ -169,8 +183,10 @@ p{ margin: 0 0 1em; color: var(--muted); }
    Hero
    ========================================================================== */
 .hero{
+  /* Nessun padding-top: la foto riempie tutto lo schermo, header compreso (che è
+     trasparente in cima alla pagina, vedi .site-header sopra). */
   position: relative; min-height: 100vh; display: flex; align-items: center;
-  overflow: hidden; padding-top: 84px;
+  overflow: hidden;
 }
 .hero-bg{ position: absolute; inset: 0; background:
   radial-gradient(ellipse at 30% 20%, #201a12 0%, transparent 55%),
@@ -457,6 +473,15 @@ p{ margin: 0 0 1em; color: var(--muted); }
 .process-doodle{ width: 40px; height: 40px; color: rgba(23,20,15,.55); }
 .process-card h3{ font-size: 19px; margin-bottom: 10px; color: var(--ink); }
 .process-card p{ color: rgba(23,20,15,.68); font-size: 14.5px; line-height: 1.6; margin: 0; }
+/* .link-arrow usa var(--accent), pensato per lo sfondo scuro del sito: su una card
+   "carta" chiara il contrasto non basterebbe (WCAG). Qui il colore diventa var(--ink)
+   con una sottolineatura, mantenendo la stessa freccia animata al passaggio del mouse. */
+.process-card-link{
+  display: inline-flex; margin-top: 16px; color: var(--ink) !important;
+  border-bottom: 1px solid rgba(23,20,15,.35); padding-bottom: 2px; text-transform: none;
+  font-weight: 700; letter-spacing: 0; font-size: 13.5px;
+}
+.process-card-link:hover{ border-bottom-color: var(--ink); }
 
 @media (max-width: 1024px){
   .process-cards{ grid-template-columns: repeat(2, 1fr); }
@@ -515,6 +540,8 @@ p{ margin: 0 0 1em; color: var(--muted); }
 .faq-answer > div{ overflow: hidden; }
 .faq-item.is-open .faq-answer{ grid-template-rows: 1fr; }
 .faq-answer p{ margin: 0; padding: 0 26px 22px; color: var(--muted); font-size: 15px; line-height: 1.7; }
+.faq-answer a{ color: var(--accent); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+.faq-answer a:hover{ color: var(--accent-hover); }
 
 @media (max-width: 640px){ .faq-question{ padding: 16px 20px; font-size: 15px; } }
 
@@ -538,6 +565,41 @@ p{ margin: 0 0 1em; color: var(--muted); }
 
 @media (max-width: 1024px){ .masonry{ column-count: 3; } }
 @media (max-width: 720px){ .masonry{ column-count: 2; column-gap: 14px; } .masonry-item{ margin-bottom: 14px; } }
+
+/* ==========================================================================
+   Pagina "Cura del tatuaggio" (raggiunta soprattutto via QR code lasciato
+   al cliente dopo la seduta)
+   ========================================================================== */
+.care-hero{
+  position: relative; padding: 160px 0 80px; overflow: hidden;
+}
+.care-hero::before{
+  content:""; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse at 30% 0%, #1a140c 0%, transparent 55%),
+    linear-gradient(180deg, #121213 0%, #0A0A0B 60%);
+}
+.care-hero .section-lead{ max-width: 520px; }
+
+.care-content{ padding: 20px 0 120px; }
+.care-grid{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 56px; }
+.care-block{
+  background: var(--paper); color: var(--ink); border-radius: 20px; padding: 30px 28px 32px;
+  box-shadow: 0 20px 40px -18px rgba(0,0,0,.5);
+}
+.care-num{ display: block; font-family: var(--font-display); font-size: 26px; font-weight: 600; color: rgba(23,20,15,.35); margin-bottom: 14px; }
+.care-block h2{ font-size: 19px; margin-bottom: 10px; color: var(--ink); }
+.care-block p{ color: rgba(23,20,15,.68); font-size: 14.5px; line-height: 1.7; margin: 0; }
+
+.care-cta{
+  text-align: center; max-width: 520px; margin-left: auto; margin-right: auto;
+}
+.care-cta p{ color: var(--text); font-size: 17px; margin-bottom: 24px; }
+.care-cta .hero-actions{ justify-content: center; }
+
+@media (max-width: 720px){
+  .care-grid{ grid-template-columns: 1fr; }
+  .care-hero{ padding-top: 130px; }
+}
 
 /* ==========================================================================
    Pagina 404
@@ -586,6 +648,28 @@ p{ margin: 0 0 1em; color: var(--muted); }
    apposta) — invisibile e non raggiungibile da tastiera per una persona reale. */
 .honeypot-field{ position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 
+/* Form contatti a step: indicatore di avanzamento + un passaggio alla volta */
+.form-progress{ display: flex; gap: 8px; margin-bottom: 10px; }
+.form-progress-step{ flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background .3s var(--ease); }
+.form-progress-step.is-active, .form-progress-step.is-done{ background: var(--accent); }
+.form-step-label{ font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 22px; min-height: 1em; }
+.form-step[hidden]{ display: none; }
+/* Animazione (non transizione) perché l'elemento passa da hidden a visibile nello
+   stesso frame: solo @keyframes riparte in modo affidabile in questo caso. */
+.form-step:not([hidden]){ animation: formStepIn .45s var(--ease) both; }
+@keyframes formStepIn{ from{ opacity: 0; transform: translateY(10px); } to{ opacity: 1; transform: none; } }
+
+.form-nav{ display: flex; gap: 12px; margin-top: 4px; }
+.form-nav .form-next, .form-nav .form-submit{ flex: 1; min-width: 0; border: none; }
+.form-nav .form-back{ flex: none; }
+/* Sotto i ~420px "Indietro" + "Avanti"/"Invia richiesta" non entrano affiancati
+   nemmeno riducendo flex-basis (il padding dei bottoni ha un minimo): impilati,
+   più sicuro che affidarsi a min-width:0 da solo su schermi molto stretti. */
+@media (max-width: 420px){
+  .form-nav{ flex-direction: column; }
+  .form-nav .form-back{ order: 2; }
+}
+
 .form-row{ margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
 .form-row label{ font-size: 13px; letter-spacing: .04em; color: var(--muted); transition: color .2s; }
 .form-row label em{ font-style: normal; }
@@ -600,8 +684,7 @@ p{ margin: 0 0 1em; color: var(--muted); }
 }
 .form-row:focus-within label{ color: var(--accent); }
 .form-row textarea{ resize: vertical; }
-.form-submit{ width: 100%; border: none; margin-top: 4px; }
-.form-submit:active{ transform: translateY(0) scale(.98); }
+.form-submit:active, .form-next:active{ transform: translateY(0) scale(.98); }
 .form-note{ margin: 14px 0 0; font-size: 13px; color: var(--accent); min-height: 1em; }
 
 @media (max-width: 860px){ .contact-inner{ grid-template-columns: 1fr; gap: 48px; } .contact-form{ padding: 28px; } }
