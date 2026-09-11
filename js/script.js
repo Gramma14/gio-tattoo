@@ -264,15 +264,16 @@ document.addEventListener('DOMContentLoaded', function () {
      profondità, coerente con "Depth in every line". Attivo solo mentre la hero è
      a schermo, disattivato con prefers-reduced-motion. */
   var heroSectionEl = document.getElementById('home');
-  var heroPhotoEl = document.querySelector('.hero-photo');
+  var heroPhotoEls = document.querySelectorAll('.hero-photo');
   var heroSpotlightEl = document.querySelector('.hero-spotlight');
-  if (heroSectionEl && !prefersReducedMotion && (heroPhotoEl || heroSpotlightEl)) {
+  if (heroSectionEl && !prefersReducedMotion && (heroPhotoEls.length || heroSpotlightEl)) {
     var parallaxTicking = false;
     var updateParallax = function () {
       var y = window.scrollY;
       var heroH = heroSectionEl.offsetHeight;
       if (y < heroH) {
-        if (heroPhotoEl) heroPhotoEl.style.backgroundPosition = 'center calc(50% + ' + Math.round(y * 0.15) + 'px)';
+        var pos = 'center calc(50% + ' + Math.round(y * 0.15) + 'px)';
+        heroPhotoEls.forEach(function (el) { el.style.backgroundPosition = pos; });
         if (heroSpotlightEl) heroSpotlightEl.style.transform = 'translateX(-50%) translateY(' + Math.round(y * 0.1) + 'px)';
       }
       parallaxTicking = false;
@@ -280,6 +281,49 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('scroll', function () {
       if (!parallaxTicking) { parallaxTicking = true; requestAnimationFrame(updateParallax); }
     }, { passive: true });
+  }
+
+  /* ---------- Carosello crossfade sulla hero (più foto a rotazione) ----------
+     Ogni 7s passa alla foto successiva (.is-active), che diventa visibile solo se
+     è anche già caricata (.has-photo, gestito dal probe data-img più sopra) — vedi
+     css/style.css. Disattivato con prefers-reduced-motion (resta sulla prima foto). */
+  if (heroPhotoEls.length > 1 && !prefersReducedMotion) {
+    var heroSlideIndex = 0;
+    setInterval(function () {
+      heroPhotoEls[heroSlideIndex].classList.remove('is-active');
+      heroSlideIndex = (heroSlideIndex + 1) % heroPhotoEls.length;
+      heroPhotoEls[heroSlideIndex].classList.add('is-active');
+    }, 7000);
+  }
+
+  /* ---------- Tilt 3D che segue il cursore (card About, Process) ----------
+     La card ruota leggermente in base alla posizione del mouse al suo interno,
+     dando una sensazione di profondità fisica. Solo con mouse reale (mai touch),
+     mai con reduced-motion. Sulle card Process sostituisce il vecchio hover CSS
+     statico (translateY+rotate+scale fissi) con un tilt dinamico che include lo
+     stesso sollevamento e la stessa scala, ma seguendo davvero il cursore. */
+  if (canHoverFine && !prefersReducedMotion) {
+    var tiltEls = document.querySelectorAll('.process-card, .about-portrait, .about-secondary');
+    tiltEls.forEach(function (card) {
+      var isProcessCard = card.classList.contains('process-card');
+      var tiltRaf = null;
+      card.addEventListener('mouseenter', function () { card.classList.add('tilt-active'); });
+      card.addEventListener('mousemove', function (e) {
+        if (tiltRaf) return;
+        tiltRaf = requestAnimationFrame(function () {
+          var r = card.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width - 0.5;
+          var py = (e.clientY - r.top) / r.height - 0.5;
+          var rotateY = px * 10;
+          var rotateX = -py * 10;
+          var t = 'perspective(900px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg)';
+          if (isProcessCard) t += ' translateY(-8px) scale(1.03)';
+          card.style.transform = t;
+          tiltRaf = null;
+        });
+      });
+      card.addEventListener('mouseleave', function () { card.style.transform = ''; });
+    });
   }
 
   /* ---------- Work: filmstrip — hover (mouse) + tap (touch) ---------- */
@@ -415,20 +459,17 @@ document.addEventListener('DOMContentLoaded', function () {
   var formNote = document.getElementById('form-note');
   if (form) {
     var formSteps = Array.from(form.querySelectorAll('.form-step'));
-    var progressDots = Array.from(form.querySelectorAll('.form-progress-step'));
+    var progressFill = form.querySelector('.form-progress-fill');
     var stepLabelEl = document.getElementById('form-step-label');
     var backBtn = form.querySelector('.form-back');
     var nextBtn = form.querySelector('.form-next');
     var submitBtn = form.querySelector('.form-submit');
-    var stepNames = ['Passo 1 di 3 — Il soggetto', 'Passo 2 di 3 — La tua idea', 'Passo 3 di 3 — I tuoi contatti'];
+    var stepNames = ['Passo 1 di 3 — Tu e il tuo stile', 'Passo 2 di 3 — La tua idea', 'Passo 3 di 3 — Come contattarti'];
     var currentStep = 0;
 
     function showStep(i) {
       formSteps.forEach(function (step, idx) { step.hidden = idx !== i; });
-      progressDots.forEach(function (dot, idx) {
-        dot.classList.toggle('is-active', idx === i);
-        dot.classList.toggle('is-done', idx < i);
-      });
+      if (progressFill) progressFill.style.width = (((i + 1) / formSteps.length) * 100) + '%';
       if (stepLabelEl) stepLabelEl.textContent = stepNames[i] || '';
       if (backBtn) backBtn.hidden = i === 0;
       if (nextBtn) nextBtn.hidden = i === formSteps.length - 1;

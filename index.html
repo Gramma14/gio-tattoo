@@ -44,7 +44,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/style.css?v=6">
+<link rel="stylesheet" href="css/style.css?v=7">
 
 <!--
   Structured data come un unico grafo collegato (@graph): l'attività (TattooParlor),
@@ -210,8 +210,12 @@
 
   <!-- ============ HOME / HERO ============ -->
   <section id="home" class="hero">
+    <!-- Carosello crossfade: più foto a rotazione ogni 7s (script.js). Per ora sono
+         le uniche 2 foto vere già disponibili — TODO: aggiungere altre foto reali
+         quando ci sono (mai foto generate al posto di foto vere dello studio). -->
     <div class="hero-bg" aria-hidden="true">
-      <div class="hero-photo" data-img="assets/images/hero.jpg" data-alt="Gio al lavoro nel suo studio di tatuaggi a Lecco, seduta di tatuaggio black and grey realism in corso"></div>
+      <div class="hero-photo is-active" data-img="assets/images/hero.jpg" data-alt="Gio al lavoro nel suo studio di tatuaggi a Lecco, seduta di tatuaggio black and grey realism in corso"></div>
+      <div class="hero-photo" data-img="assets/images/about-studio.jpg" data-alt="Interno dello studio di tatuaggi Gio Tattoo a Lecco"></div>
       <div class="hero-vignette"></div>
       <div class="hero-grain"></div>
       <div class="hero-spotlight"></div>
@@ -495,13 +499,15 @@
              (ed è) meno impegnativo da completare, soprattutto su mobile. Gestito in
              js/script.js — senza JS i tre step restano tutti visibili in sequenza. -->
         <div class="form-progress" aria-hidden="true">
-          <span class="form-progress-step" data-step="0"></span>
-          <span class="form-progress-step" data-step="1"></span>
-          <span class="form-progress-step" data-step="2"></span>
+          <div class="form-progress-fill" id="form-progress-fill"></div>
         </div>
         <p class="form-step-label" id="form-step-label"></p>
 
         <div class="form-step" data-step="0">
+          <div class="form-row">
+            <label for="name">Nome e cognome</label>
+            <input type="text" id="name" name="name" required autocomplete="name">
+          </div>
           <div class="form-row">
             <label for="subject">Soggetto del tatuaggio</label>
             <select id="subject" name="subject">
@@ -522,10 +528,6 @@
         </div>
 
         <div class="form-step" data-step="2">
-          <div class="form-row">
-            <label for="name">Nome e cognome</label>
-            <input type="text" id="name" name="name" required autocomplete="name">
-          </div>
           <div class="form-row">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required autocomplete="email">
@@ -620,6 +622,6 @@
   </div>
 </div>
 
-<script src="js/script.js?v=6"></script>
+<script src="js/script.js?v=7"></script>
 </body>
 </html>
