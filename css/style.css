@@ -230,6 +230,31 @@ p{ margin: 0 0 1em; color: var(--muted); }
 @keyframes scrollHint{ 0%{ opacity:1; transform: translateY(0);} 70%{ opacity:0; transform: translateY(16px);} 100%{ opacity:0; } }
 
 /* ==========================================================================
+   Stats — contatore numeri sotto la hero
+   ========================================================================== */
+.stats{ padding: 60px 0; border-bottom: 1px solid var(--border); background: var(--bg); }
+.stats-inner{ display: flex; align-items: center; justify-content: center; gap: 64px; text-align: center; flex-wrap: wrap; }
+.stat-value{ margin: 0; line-height: 1; }
+.stat-number{
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(48px, 7vw, 84px);
+  color: var(--text);
+  background: linear-gradient(180deg, var(--text) 0%, rgba(237,237,237,.5) 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+.stat-plus{
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(26px, 4vw, 42px);
+  color: var(--accent); margin-left: 2px;
+}
+.stat-label{ margin: 10px 0 0; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.stat-divider{ width: 1px; height: 60px; background: var(--border); }
+@media (max-width: 640px){
+  .stats{ padding: 44px 0; }
+  .stats-inner{ gap: 36px; }
+  .stat-divider{ display: none; }
+}
+
+/* ==========================================================================
    Sections generic spacing
    ========================================================================== */
 .work-preview, .about, .process, .faq, .contact, .gallery-page{ padding: 120px 0; }
@@ -260,6 +285,20 @@ p{ margin: 0 0 1em; color: var(--muted); }
 /* Quando data-img via JS carica una foto reale (script.js), il gradiente si attenua
    e l'etichetta "placeholder" scompare — la card mostra solo la foto. */
 .ph.has-photo::before{ opacity: .32; }
+
+/* "Tenda" che si ritira rivelando la foto, invece del semplice fade — un pannello
+   pieno che copre tutto (z-index sopra foto/gradiente/etichetta) e si restringe da
+   destra verso sinistra quando l'elemento entra in vista (classe .is-revealed,
+   aggiunta da script.js). Il ritardo usa la stessa variabile dello stagger già
+   calcolato per le altre griglie, per restare sincronizzato. */
+.film-item .ph::after, .masonry-item .ph::after, .gallery-item .ph::after{
+  content: ""; position: absolute; inset: 0; z-index: 2; background: var(--bg);
+  transform-origin: right; transform: scaleX(1);
+  transition: transform .9s var(--ease); transition-delay: var(--stagger-delay, 0ms);
+}
+.film-item.is-revealed .ph::after, .masonry-item.is-revealed .ph::after, .gallery-item.is-revealed .ph::after{
+  transform: scaleX(0);
+}
 .ph.has-photo .ph-label{ opacity: 0; }
 .ph-label{
   position: relative; z-index: 1; padding: 18px; font-size: 13px; letter-spacing: .08em;
@@ -471,6 +510,17 @@ p{ margin: 0 0 1em; color: var(--muted); }
 .process-card-top{ display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; }
 .process-num{ font-family: var(--font-display); font-size: 28px; font-weight: 600; color: rgba(23,20,15,.35); transition: color .4s; }
 .process-doodle{ width: 40px; height: 40px; color: rgba(23,20,15,.55); }
+/* L'icona si "disegna" da sola quando la card entra in vista, invece di apparire di
+   colpo — coerente con un sito di un tatuatore. script.js calcola la lunghezza reale
+   di ogni tratto (stroke-dasharray) e imposta --dash-len come stato di partenza
+   "nascosto"; qui sotto, in vista, l'offset scende a 0 e il tratto si traccia. */
+.process-doodle path, .process-doodle circle{
+  stroke-dashoffset: var(--dash-len, 0);
+  transition: stroke-dashoffset 1.3s var(--ease); transition-delay: var(--stagger-delay, 0ms);
+}
+.process-card.in-view .process-doodle path, .process-card.in-view .process-doodle circle{
+  stroke-dashoffset: 0;
+}
 .process-card h3{ font-size: 19px; margin-bottom: 10px; color: var(--ink); }
 .process-card p{ color: rgba(23,20,15,.68); font-size: 14.5px; line-height: 1.6; margin: 0; }
 /* .link-arrow usa var(--accent), pensato per lo sfondo scuro del sito: su una card

@@ -130,7 +130,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!container) return;
     var items = container.querySelectorAll('.stagger, .reveal');
     items.forEach(function (el, i) {
-      el.style.transitionDelay = Math.min(i * 55, 360) + 'ms';
+      var delay = Math.min(i * 55, 360) + 'ms';
+      el.style.transitionDelay = delay;
+      // Stessa cifra esposta come custom property, per sincronizzare animazioni CSS
+      // scollegate dalla classe .reveal/.stagger stessa (es. le icone Process che
+      // si disegnano, il "curtain reveal" delle foto).
+      el.style.setProperty('--stagger-delay', delay);
     });
   });
 
@@ -146,6 +151,72 @@ document.addEventListener('DOMContentLoaded', function () {
     revealEls.forEach(function (el) { revealObserver.observe(el); });
   } else {
     revealEls.forEach(function (el) { el.classList.add('in-view'); });
+  }
+
+  /* ---------- Icone Process: si "disegnano" invece di apparire di colpo ----------
+     Calcola la lunghezza reale di ogni tratto SVG e la imposta come stroke-dasharray
+     + variabile --dash-len (stato "nascosto" di partenza) — il resto lo fa il CSS
+     quando la card riceve .in-view dall'observer sopra. */
+  document.querySelectorAll('.process-doodle').forEach(function (svg) {
+    svg.querySelectorAll('path, circle').forEach(function (shape) {
+      if (typeof shape.getTotalLength !== 'function') return;
+      var len = shape.getTotalLength();
+      shape.style.strokeDasharray = len;
+      shape.style.setProperty('--dash-len', len);
+    });
+  });
+
+  /* ---------- "Tenda" che si ritira sulle foto (Work + Galleria) ----------
+     Osservatore dedicato e separato da quello di .reveal/.stagger sopra: i
+     .film-item hanno già le loro transform per l'effetto coverflow al passaggio
+     del mouse, meglio non farle competere sullo stesso elemento. */
+  var curtainEls = document.querySelectorAll('.film-item, .masonry-item, .gallery-item');
+  if ('IntersectionObserver' in window && curtainEls.length) {
+    var curtainObserver = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    curtainEls.forEach(function (el, i) {
+      el.style.setProperty('--stagger-delay', Math.min(i * 55, 360) + 'ms');
+      curtainObserver.observe(el);
+    });
+  } else {
+    curtainEls.forEach(function (el) { el.classList.add('is-revealed'); });
+  }
+
+  /* ---------- Contatore numeri animati (stats sotto la hero) ---------- */
+  var statNumbers = document.querySelectorAll('.stat-number');
+  if (statNumbers.length) {
+    var reduceMotionForStats = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var animateCount = function (el) {
+      var target = parseInt(el.getAttribute('data-count-to'), 10) || 0;
+      if (reduceMotionForStats) { el.textContent = target; return; }
+      var duration = 1700;
+      var start = null;
+      function step(ts) {
+        if (start === null) start = ts;
+        var progress = Math.min((ts - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3); // decelerazione verso il valore finale
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = target;
+      }
+      requestAnimationFrame(step);
+    };
+    if ('IntersectionObserver' in window) {
+      var statsObserver = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) { animateCount(entry.target); obs.unobserve(entry.target); }
+        });
+      }, { threshold: 0.6 });
+      statNumbers.forEach(function (el) { statsObserver.observe(el); });
+    } else {
+      statNumbers.forEach(function (el) { el.textContent = el.getAttribute('data-count-to'); });
+    }
   }
 
   /* ---------- Alone che segue il mouse ---------- */
@@ -184,6 +255,31 @@ document.addEventListener('DOMContentLoaded', function () {
       });
       btn.addEventListener('mouseleave', function () { btn.style.transform = ''; });
     });
+  }
+
+  /* ---------- Parallax leggero multi-livello sulla hero ----------
+     La foto si "pannella" internamente (background-position, mai transform: con
+     background-size:cover non si aprono mai bordi vuoti) più lenta dello scroll
+     reale, lo spotlight si sposta a una velocità diversa — due livelli, due
+     profondità, coerente con "Depth in every line". Attivo solo mentre la hero è
+     a schermo, disattivato con prefers-reduced-motion. */
+  var heroSectionEl = document.getElementById('home');
+  var heroPhotoEl = document.querySelector('.hero-photo');
+  var heroSpotlightEl = document.querySelector('.hero-spotlight');
+  if (heroSectionEl && !prefersReducedMotion && (heroPhotoEl || heroSpotlightEl)) {
+    var parallaxTicking = false;
+    var updateParallax = function () {
+      var y = window.scrollY;
+      var heroH = heroSectionEl.offsetHeight;
+      if (y < heroH) {
+        if (heroPhotoEl) heroPhotoEl.style.backgroundPosition = 'center calc(50% + ' + Math.round(y * 0.15) + 'px)';
+        if (heroSpotlightEl) heroSpotlightEl.style.transform = 'translateX(-50%) translateY(' + Math.round(y * 0.1) + 'px)';
+      }
+      parallaxTicking = false;
+    };
+    window.addEventListener('scroll', function () {
+      if (!parallaxTicking) { parallaxTicking = true; requestAnimationFrame(updateParallax); }
+    }, { passive: true });
   }
 
   /* ---------- Work: filmstrip — hover (mouse) + tap (touch) ---------- */
